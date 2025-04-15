@@ -30,7 +30,7 @@ export class TaskController {
         try {
             res.json(req.task)
         } catch (error) {
-            res.status(500).json({msg:'There was an error to getting the task'})
+            res.send('Error al obtener la tarea')
         }
     }
 
@@ -40,7 +40,7 @@ export class TaskController {
             req.task.taskName = req.body.taskName
             req.task.description = req.body.description
             await req.task.save()
-            res.json({msg:'Task updated successfully'})
+            res.send('Se actualizó la tarea')
 
         } catch (error) {
             res.status(500).json({msg:'There was an error to updating the task'})
@@ -52,9 +52,9 @@ export class TaskController {
             req.project.tasks = req.project.tasks.filter(task => task.toString() !== req.task.id.toString())
             await Promise.allSettled([req.task.deleteOne(),req.project.save()])
 
-            res.json({msg:'task deleted successfully'})
+            res.send('Tarea Eliminada')
         } catch (error) {
-            res.status(500).json({msg:'There was an error to deleting the task'})
+            res.status(500).send('Error al eliminar')
         }
     }
 

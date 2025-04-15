@@ -15,13 +15,13 @@ export const taskExits = async (req: Request, res: Response, next: NextFunction)
         const task = await Task.findById(taskId)
 
         if (!task) {
-            res.status(404).json({ msg: 'Task not found' })
+            res.status(404).json({ message: 'Tarea no encontrada' })
             return
         }
         req.task = task
         next()
     } catch (error) {
-        res.status(500).json({ msg: 'There was an found task' })
+        res.status(500).json({ message: 'There was an found task' })
     }
 }
 
