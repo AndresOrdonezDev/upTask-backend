@@ -63,9 +63,9 @@ export class TaskController {
         try {
             req.task.status = status
             await req.task.save()
-            res.json({msg:'Task updated successfully'})
+            res.send('Estado actualizado')
         } catch (error) {
-            res.status(500).json({msg:'There was an error to deleting the task'})
+            res.status(500).send('Hubo un erro al actualizar el estado')
         }
     }
 }
