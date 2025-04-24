@@ -9,7 +9,7 @@ router.post('/create-account',
     validateEmail,
     validatePassword,
     confirmPassword,
-    AuthController.register
+    AuthController.createAccount
 )
 
 export default router;
