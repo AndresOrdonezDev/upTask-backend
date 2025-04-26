@@ -41,3 +41,25 @@ export const confirmPassword = (req: Request, res: Response, next: NextFunction)
     }
     next();
 }
+
+export const validateToken = (req: Request, res: Response, next: NextFunction) => {
+    //validate exist token and length of 6 characters and only numbers
+
+    const { token } = req.body;
+    const tokenRegex = /^[0-9]{6}$/; // Basic token validation regex
+    if (!tokenRegex.test(token)) {
+        res.status(400).send('El token no es válido');
+        return;
+    }
+    // Check if token is a number and has 6 characters
+    if (isNaN(Number(token)) || token.length !== 6) {
+        res.status(400).send('El token no es válido');
+        return;
+    }
+    // Check if token is empty or undefined
+    if (!token) {
+        res.status(400).send('El token es obligatorio');
+        return;
+    }
+    next();
+}

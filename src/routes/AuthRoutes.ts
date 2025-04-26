@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
-import { confirmPassword, handleInputErrors, validateEmail, validatePassword } from "../middleware/validation";
+import { confirmPassword, handleInputErrors, validateEmail, validatePassword, validateToken } from "../middleware/validation";
 
 const router = Router();
 
@@ -11,5 +11,15 @@ router.post('/create-account',
     confirmPassword,
     AuthController.createAccount
 )
+router.post('/confirm-account',
+    validateToken,
+    AuthController.confirmAccount
+);
 
+router.post('/login',
+    handleInputErrors,
+    validateEmail,
+    validatePassword,
+    AuthController.login
+)
 export default router;
