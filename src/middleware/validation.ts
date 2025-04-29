@@ -25,7 +25,7 @@ export const validateEmail = (req: Request, res: Response, next: NextFunction) =
 
 export const validatePassword = (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // At least 8 characters, one letter and one number
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/; // At least 8 characters, one letter and one number
     if (!passwordRegex.test(password)) {
         res.status(400).send('La contraseña debe tener al menos 8 caracteres, una letra y un número');
         return;
@@ -34,8 +34,8 @@ export const validatePassword = (req: Request, res: Response, next: NextFunction
 }
 
 export const confirmPassword = (req: Request, res: Response, next: NextFunction) => {
-    const { password, confirmPassword } = req.body;
-    if (password !== confirmPassword) {
+    const { password, password_confirmation } = req.body;
+    if (password !== password_confirmation) {
         res.status(400).send('Las contraseñas no coinciden');
         return;
     }
