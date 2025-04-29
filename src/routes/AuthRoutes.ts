@@ -22,4 +22,9 @@ router.post('/login',
     validatePassword,
     AuthController.login
 )
+router.post('/request-code',
+    handleInputErrors,
+    validateEmail,
+    AuthController.requestConfirmationCode
+)
 export default router;

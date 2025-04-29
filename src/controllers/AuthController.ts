@@ -5,7 +5,6 @@ import Token from '../models/Token';
 import { generateToken } from '../utils/token';
 import { AuthEmail } from '../emails/AuthEmail';
 
-
 export class AuthController {
     static createAccount = async (req: Request, res: Response) => {
         const { email, password, username } = req.body;
@@ -89,6 +88,35 @@ export class AuthController {
             return
         }
         res.status(200).send(user)
+    }
+
+    static requestConfirmationCode = async (req: Request, res: Response) => {
+        const { email } = req.body;
+        try {
+            const user = await User.findOne({ email });
+            if (user) {
+                const error = new Error('El usuraio no está registrado');
+                res.status(409).send(error.message);
+                return
+            }
+
+            //Generate token
+            const token = new Token()
+            token.token = generateToken()
+            token.user = user.id;
+            //send email
+            AuthEmail.sendConfirmationEmail({ 
+                email, 
+                username:user.username, 
+                token: token.token 
+            });
+
+            await token.save();
+            res.send("Revisa tu email para confirmar");
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error al crear la cuenta' });
+        }
     }
         
 
