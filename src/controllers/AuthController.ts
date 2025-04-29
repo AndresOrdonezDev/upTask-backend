@@ -94,9 +94,14 @@ export class AuthController {
         const { email } = req.body;
         try {
             const user = await User.findOne({ email });
-            if (user) {
-                const error = new Error('El usuraio no está registrado');
-                res.status(409).send(error.message);
+            if (!user) {
+                const error = new Error('Cuenta no registrada');
+                res.status(404).send(error.message);
+                return
+            }
+            if(user.confirmed){
+                const error = new Error('La cuenta ya está confirmada');
+                res.status(403).send(error.message);
                 return
             }
 
