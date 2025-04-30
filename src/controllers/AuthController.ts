@@ -123,6 +123,34 @@ export class AuthController {
             res.status(500).json({ error: 'Error al crear la cuenta' });
         }
     }
+
+    static forgotPassword = async (req: Request, res: Response) => {
+        const { email } = req.body;
+        try {
+            const user = await User.findOne({ email });
+            if (!user) {
+                const error = new Error('Cuenta no registrada');
+                res.status(404).send(error.message);
+                return
+            }
+
+            //Generate token
+            const token = new Token()
+            token.token = generateToken()
+            token.user = user.id;
+            await token.save();
+            //send email
+            AuthEmail.sendPasswordResetToken({ 
+                email, 
+                username:user.username, 
+                token: token.token 
+            });
+            res.send("Revisa tu email para restablecer tu contraseña");
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error al crear la cuenta' });
+        }
+    }
         
 
 }
