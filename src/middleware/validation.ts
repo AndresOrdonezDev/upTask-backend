@@ -44,8 +44,8 @@ export const confirmPassword = (req: Request, res: Response, next: NextFunction)
 
 export const validateToken = (req: Request, res: Response, next: NextFunction) => {
     //validate exist token and length of 6 characters and only numbers
-
-    const { token } = req.body;
+    
+    const token = req.body?.token || req.params?.token;
     const tokenRegex = /^[0-9]{6}$/; // Basic token validation regex
     if (!tokenRegex.test(token)) {
         res.status(400).send('El token no es válido');

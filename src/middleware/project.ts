@@ -16,7 +16,7 @@ export const projectExits = async (req:Request, res:Response, next:NextFunction)
         const project = await Project.findById(projectId)
 
             if (!project) {
-                res.status(404).json({ msg: 'Project not found' })
+                res.status(404).json({ msg: 'Proyecto no encontrado' })
                 return
             }
             req.project = project

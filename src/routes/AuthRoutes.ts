@@ -32,4 +32,15 @@ router.post('/forgot-password',
     validateEmail,
     AuthController.forgotPassword
 )
+
+router.post('/validate-token',
+    validateToken,
+    AuthController.validateToken
+);
+router.post('/update-password/:token',
+    handleInputErrors,
+    validatePassword,
+    validateToken,
+    AuthController.updatePassword
+);
 export default router;

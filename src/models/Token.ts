@@ -17,7 +17,7 @@ const tokenSchema: Schema = new Schema({
         ref: "User",
         required: true,
     },
-    createdAt:{
+    expiresAt:{
         type: Date,
         default: Date.now,
         expires: "10m", // 1 hour in seconds or "1d" for 1 day or "10m" for 10 minutes 
