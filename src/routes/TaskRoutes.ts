@@ -3,12 +3,15 @@ import { TaskController } from '../controllers/TaskController'
 import { projectExits } from '../middleware/project'
 import { handleInputErrors } from '../middleware/validation'
 import { taskBelongsToProject, taskExits } from '../middleware/task'
+import { authenticate } from '../middleware/auth'
 
 const router = Router()
 
 router.param('projectId',projectExits)
 router.param('taskId', taskExits)
 router.param('taskId', taskBelongsToProject)
+
+router.use(authenticate)
 
 router.post('/:projectId',
     handleInputErrors,
@@ -33,4 +36,6 @@ router.post('/:projectId/task/:taskId/status',
     handleInputErrors,
     TaskController.updateStatus
 )
+
+
 export default router

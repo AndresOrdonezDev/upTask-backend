@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { confirmPassword, handleInputErrors, validateEmail, validatePassword, validateToken } from "../middleware/validation";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
@@ -43,4 +44,9 @@ router.post('/update-password/:token',
     validateToken,
     AuthController.updatePassword
 );
+
+router.get('/user',
+    authenticate,
+    AuthController.user
+)
 export default router;

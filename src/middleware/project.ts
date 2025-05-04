@@ -16,12 +16,12 @@ export const projectExits = async (req:Request, res:Response, next:NextFunction)
         const project = await Project.findById(projectId)
 
             if (!project) {
-                res.status(404).json({ msg: 'Proyecto no encontrado' })
+                res.status(404).send('Proyecto no encontrado')
                 return
             }
             req.project = project
             next()
     } catch (error) {
-        res.status(500).json({msg:'There was an error to creating the task'})
+        res.status(500).send('Error al consultar el proyecto')
     }
 }
