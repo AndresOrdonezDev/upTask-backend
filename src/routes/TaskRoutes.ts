@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { TaskController } from '../controllers/TaskController'
 import { projectExits } from '../middleware/project'
 import { handleInputErrors } from '../middleware/validation'
-import { taskBelongsToProject, taskExits } from '../middleware/task'
+import { hasAuthorization, taskBelongsToProject, taskExits } from '../middleware/task'
 import { authenticate } from '../middleware/auth'
 
 const router = Router()
@@ -15,6 +15,7 @@ router.use(authenticate)
 
 router.post('/:projectId',
     handleInputErrors,
+    hasAuthorization,
     TaskController.createTask
 )
 router.get('/:projectId',
@@ -26,9 +27,11 @@ router.get('/:projectId/task/:taskId',
 )
 router.put('/:projectId/task/:taskId',
     handleInputErrors,
+    hasAuthorization,
     TaskController.updateTask
 )
 router.delete('/:projectId/task/:taskId',
+    hasAuthorization,
     TaskController.deleteTask
 )
 

@@ -42,9 +42,8 @@ router.post('/:projectId/team',
     handleInputErrors,
     TeamMemberController.addMemberById
 )
-router.delete('/:projectId/team',
+router.delete('/:projectId/team/:userId',
     projectExits,
-    handleInputErrors,
     TeamMemberController.removeMemberById
 )
 router.get('/:projectId/team',

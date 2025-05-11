@@ -28,7 +28,17 @@ export const taskExits = async (req: Request, res: Response, next: NextFunction)
 export const taskBelongsToProject = async (req: Request, res: Response, next: NextFunction) => {
 
     if (req.task.project.toString() !== req.project.id.toString()) {
-        res.status(400).json({ msg: 'Action invalid' })
+        res.status(400).send('Acción invalida')
+        return
+    }
+    next()
+
+}
+
+export const hasAuthorization = async (req: Request, res: Response, next: NextFunction) => {
+
+    if (req.user.id.toString() !== req.project.manager.toString()) {
+        res.status(400).send('No autorizado')
         return
     }
     next()
