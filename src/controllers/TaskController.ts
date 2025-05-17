@@ -30,8 +30,11 @@ export class TaskController {
         try {
             const task = await Task.findById(req.task.id)
                             .populate({path:'completedBy.user',select:'id username email'})
+                            .populate({path:'notes',populate:{path:'createdBy',select:'id username email'}})
             res.json(task)
         } catch (error) {
+            console.log(error);
+            
             res.send('Error al obtener la tarea')
         }
     }
