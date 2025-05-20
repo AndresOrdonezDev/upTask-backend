@@ -49,4 +49,25 @@ router.get('/user',
     authenticate,
     AuthController.user
 )
+
+router.post('/check-password',
+    authenticate,
+    handleInputErrors,
+    AuthController.checkUserPassword
+)
+
+/** profile */
+router.put('/profile',
+    handleInputErrors,
+    authenticate,
+    AuthController.updateProfile
+)
+
+router.post('/update-password',
+    authenticate,
+    handleInputErrors,
+    validatePassword,
+    confirmPassword,
+    AuthController.updateCurrentUserPassword
+)
 export default router;

@@ -33,6 +33,7 @@ export const validatePassword = (req: Request, res: Response, next: NextFunction
     next();
 }
 
+
 export const confirmPassword = (req: Request, res: Response, next: NextFunction) => {
     const { password, password_confirmation } = req.body;
     if (password !== password_confirmation) {

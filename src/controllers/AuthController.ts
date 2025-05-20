@@ -24,10 +24,10 @@ export class AuthController {
             token.token = generateToken()
             token.user = user.id;
             //send email
-            AuthEmail.sendConfirmationEmail({ 
-                email, 
-                username, 
-                token: token.token 
+            AuthEmail.sendConfirmationEmail({
+                email,
+                username,
+                token: token.token
             });
 
             await Promise.allSettled([user.save(), token.save()]);
@@ -38,9 +38,9 @@ export class AuthController {
         }
     }
     static confirmAccount = async (req: Request, res: Response) => {
-        const {token} = req.body;
+        const { token } = req.body;
         try {
-            const TokenExist = await Token.findOne({token})
+            const TokenExist = await Token.findOne({ token })
             if (!TokenExist) {
                 const error = new Error('El token no es válido o ha expirado');
                 res.status(404).send(error.message);
@@ -48,9 +48,9 @@ export class AuthController {
             }
             const user = await User.findById(TokenExist.user)
             user.confirmed = true;
-            await Promise.allSettled([user.save(), Token.deleteOne({token}) ])
+            await Promise.allSettled([user.save(), Token.deleteOne({ token })])
             res.send('Cuenta confirmada 👌')
-            
+
         } catch (error) {
             console.log(error);
 
@@ -58,37 +58,37 @@ export class AuthController {
     }
 
     static login = async (req: Request, res: Response) => {
-        const {email, password} = req.body;
-        const user = await User.findOne({email})
-        if(!user){
+        const { email, password } = req.body;
+        const user = await User.findOne({ email })
+        if (!user) {
             const error = new Error('Usuario no encontrado')
             res.status(404).send(error.message)
             return
         }
-        if(!user.confirmed){
+        if (!user.confirmed) {
             const token = new Token()
             token.token = generateToken()
             token.user = user.id;
             //send email
-            AuthEmail.sendConfirmationEmail({ 
-                email: user.email, 
-                username: user.username, 
-                token: token.token 
+            AuthEmail.sendConfirmationEmail({
+                email: user.email,
+                username: user.username,
+                token: token.token
             });
             await token.save()
             const error = new Error('Cuenta no confirmada, revisa tu email con el nuevo token')
             res.status(401).send(error.message)
             return
         }
-        
+
         //check password
         const passwordCorrect = await comparePassword(password, user.password)
-        if(!passwordCorrect){
+        if (!passwordCorrect) {
             const error = new Error('Contraseña incorrecta')
             res.status(401).send(error.message)
             return
         }
-        const token = generateJWT({id:user.id})
+        const token = generateJWT({ id: user.id })
         res.status(200).send(token)
     }
 
@@ -101,7 +101,7 @@ export class AuthController {
                 res.status(404).send(error.message);
                 return
             }
-            if(user.confirmed){
+            if (user.confirmed) {
                 const error = new Error('La cuenta ya está confirmada');
                 res.status(403).send(error.message);
                 return
@@ -112,10 +112,10 @@ export class AuthController {
             token.token = generateToken()
             token.user = user.id;
             //send email
-            AuthEmail.sendConfirmationEmail({ 
-                email, 
-                username:user.username, 
-                token: token.token 
+            AuthEmail.sendConfirmationEmail({
+                email,
+                username: user.username,
+                token: token.token
             });
 
             await token.save();
@@ -141,10 +141,10 @@ export class AuthController {
             token.token = generateToken()
             token.user = user.id;
             //send email
-            await AuthEmail.sendPasswordResetToken({ 
-                email, 
-                username:user.username, 
-                token: token.token 
+            await AuthEmail.sendPasswordResetToken({
+                email,
+                username: user.username,
+                token: token.token
             });
             await token.save();
             res.send("Revisa tu email para restablecer tu contraseña");
@@ -153,19 +153,19 @@ export class AuthController {
             res.status(500).json({ error: 'Error al enviar el token' });
         }
     }
-    
+
     static validateToken = async (req: Request, res: Response) => {
-        const {token} = req.body;
+        const { token } = req.body;
         try {
-            const TokenExist = await Token.findOne({token})
+            const TokenExist = await Token.findOne({ token })
             if (!TokenExist) {
                 const error = new Error('El token no es válido o ha expirado');
                 res.status(404).send(error.message);
                 return
             }
-            
+
             res.send('Ahora define una una contraseña 👌')
-            
+
         } catch (error) {
             console.log(error);
 
@@ -173,11 +173,11 @@ export class AuthController {
     }
 
     static updatePassword = async (req: Request, res: Response) => {
-        
-        const {token} = req.params;
-        const {password} = req.body;
+
+        const { token } = req.params;
+        const { password } = req.body;
         try {
-            const TokenExist = await Token.findOne({token})
+            const TokenExist = await Token.findOne({ token })
             if (!TokenExist) {
                 const error = new Error('El token no es válido o ha expirado');
                 res.status(404).send(error.message);
@@ -185,9 +185,9 @@ export class AuthController {
             }
             const user = await User.findById(TokenExist.user)
             user.password = await hashPassword(password);
-            await Promise.allSettled([user.save(), Token.deleteOne({token}) ])
+            await Promise.allSettled([user.save(), Token.deleteOne({ token })])
             res.send('Contraseña actualizada 👌')
-            
+
         } catch (error) {
             console.log(error);
 
@@ -198,5 +198,53 @@ export class AuthController {
         res.json(req.user)
         return
     }
+    static checkUserPassword = async (req: Request, res: Response) => {
+        const { password} = req.body
+        const user = await User.findById(req.user.id)
+        const isPasswordCorrect = await comparePassword(password, user.password)
+        if(!isPasswordCorrect){
+            res.status(409).send('Contraseña incorrecta')
+            return
+        }
+        res.send('contraseña validada')
+    }
+    static updateProfile = async (req: Request, res: Response) => {
+        try {
+            const { username, email } = req.body
+            const userExist = await User.findOne({ email })
+            if (userExist && userExist.id.toString() !== req.user.id.toString()) {
+                res.status(409).send('El correo ya existe en otra cuenta')
+                return
+            }
+            req.user.username = username
+            req.user.email = email
+
+            await req.user.save()
+            res.send('Perfil Actualizado')
+        } catch (error) {
+            res.status(500).send('Error al actualizar perfil')
+        }
+
+    }
+
+    static updateCurrentUserPassword = async (req: Request, res: Response) => {
+
+        try {
+            const { current_password, password } = req.body
+            const user = await User.findById(req.user.id)
+            const isPasswordCorrect = await comparePassword(current_password, user.password)
+            if (!isPasswordCorrect) {
+                res.status(401).send('Contraseña incorrecta')
+                return
+            }
+            user.password = await hashPassword(password)
+            user.save()
+            res.send('Contraseña actualizada')
+
+        } catch (error) {
+            res.status(500).send('Error al actualizar contraseña')
+        }
+    }
+
 
 }
