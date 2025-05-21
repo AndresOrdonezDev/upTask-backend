@@ -20,9 +20,9 @@ export class ProjectController {
     static getAllProject = async (req: Request, res: Response) => {
         try {
             const projects = await Project.find({
-                $or:[
-                    {manager:{$in:req.user.id}},
-                    {team:{$in:req.user.id}}
+                $or: [
+                    { manager: { $in: req.user.id } },
+                    { team: { $in: req.user.id } }
                 ]
             })
             res.json(projects)
@@ -30,18 +30,18 @@ export class ProjectController {
             console.log(error);
         }
     }
-    
+
     static getProjectById = async (req: Request, res: Response) => {
         const { id } = req.params
         try {
             const project = await Project.findById(id).populate('tasks')
-            
+
             if (!project) {
                 const error = new Error('Proyecto no encontrado')
                 res.status(404).send(error.message)
                 return
             }
-            if(project.manager.toString() !== req.user.id.toString() && !project.team.includes(req.user.id)){
+            if (project.manager.toString() !== req.user.id.toString() && !project.team.includes(req.user.id)) {
                 res.status(404).send('Acción no permitida')
                 return
             }
@@ -53,23 +53,12 @@ export class ProjectController {
     }
 
     static updateProject = async (req: Request, res: Response) => {
-        const { id } = req.params
-        try {
-            const project = await Project.findById(id)
-            if (!project) {
-                const error = new Error('Proyecto no encontrado')
-                res.status(404).send(error.message)
-                return
-            }
-            if(project.manager.toString() !== req.user.id.toString()){
-                res.status(404).send('Acción no permitida')
-                return
-            }
-            project.projectName = req.body.projectName
-            project.clientName = req.body.clientName
-            project.description = req.body.description
 
-            await project.save()
+        try {
+            req.project.projectName = req.body.projectName
+            req.project.clientName = req.body.clientName
+            req.project.description = req.body.description
+            await req.project.save()
             res.send('proyecto Actualizado')
         } catch (error) {
             console.log(error);
@@ -78,23 +67,12 @@ export class ProjectController {
     }
 
     static deleteProject = async (req: Request, res: Response) => {
-        const { id } = req.params
         try {
-            const project = await Project.findById(id)
-            if (!project) {
-                const error = new Error('Proyecto no encontrado')
-                res.status(404).send(error.message)
-                return
-            }
-            if(project.manager.toString() !== req.user.id.toString()){
-                res.status(404).send('Acción no permitida')
-                return
-            }
-            await project.deleteOne()
+            await req.project.deleteOne()
             res.send('proyecto Eliminado')
         } catch (error) {
             console.log(error);
             res.status(404).send('Acción no permitida')
-        }        
+        }
     }
 }

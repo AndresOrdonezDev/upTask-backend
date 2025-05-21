@@ -4,9 +4,11 @@ import { handleInputErrors, validateEmail} from '../middleware/validation'
 import { authenticate } from '../middleware/auth'
 import { TeamMemberController } from '../controllers/TeamConstroller'
 import { projectExits } from '../middleware/project'
+import { hasAuthorization } from '../middleware/task'
 const router = Router()
 
 router.use(authenticate)
+router.param('projectId',projectExits)
 
 router.post('/',
     handleInputErrors,
@@ -21,11 +23,13 @@ router.get('/:id',
     ProjectController.getProjectById
 )
 
-router.put('/:id',
+router.put('/:projectId',
     handleInputErrors,
+    hasAuthorization,
     ProjectController.updateProject
 )
-router.delete('/:id',
+router.delete('/:projectId',
+    hasAuthorization,
     ProjectController.deleteProject
 )
 
